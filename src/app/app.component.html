@@ -1,0 +1,291 @@
+<nav class="navbar fixed-top navbar-expand-md navbar-light bg-light ">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample04"
+              aria-controls="navbarsExample04"
+              aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon ToggleButton"></span>
+      </button>
+      <a class="navbar-brand" href="#">Contacts</a>
+    </div>
+    <!--navbar-header-->
+
+    <div class="collapse navbar-collapse ToggleElement" id="navbarsExample04">
+
+      <button (click)="addContact()" type="button" class="btn " data-toggle="modal" data-target="#contactInfo">
+        Add Contact
+      </button>
+
+      <div class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" #searchValue aria-label="Search">
+        <button type="submit" class="btn btn-outline-success my-2 my-sm-0" (click)="searchFunction(searchValue.value)">
+          Search
+        </button>
+      </div>
+
+
+    </div>
+    <!--collapse navbar-->
+  </div>
+  <!--container fluid-->
+</nav>
+<!--navbar navbar-expand-md-->
+
+
+<div class="container">
+
+  <div class="row">
+
+    <nav class="col-md-2 sidebar">
+
+      <ul class="nav flex-column">
+
+        <li class="nav-item">
+          <a class="nav-link disabled" href="#">
+            Group
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a (click)="showAll()" class="nav-link" href="#">
+            All
+          </a>
+        </li>
+
+        <div *ngFor="let item of groups ">
+
+          <li class="nav-item">
+            <a (click)="showFilter(item.group)" class="nav-link " href="#{{item.group}}">
+              {{ item.group }}
+            </a>
+          </li>
+
+        </div>
+        <!-- ngFor-->
+
+        <!-- new group  -->
+        <form #form="ngForm" novalidate>
+          <div class="form-group">
+
+            <li [hidden]="isHidden" class="nav-item small ">
+              <input type="text" name="group" class="form-control" placeholder="new group" #group="ngModel"
+                     [ngModel]="contactGroup">
+            </li>
+
+          </div>
+
+          <li [hidden]="isHidden" class="nav-item small ">
+            <button type="submit" (click)="groupSubmit(form.value)" class="btn btn-primary btn-sm">save</button>
+            <button type="button" (click)="hideGroup()" class="btn btn-primary btn-sm">cancel</button>
+          </li>
+
+          <button type="button" (click)="addGroup()" class="btn ">+Group</button>
+        </form>
+      </ul>
+      <!-- flex column-->
+    </nav>
+    <!--sidebar-->
+
+    <!--contact list-->
+    <div class="col-md-10">
+
+      <ul class="list-group list-group-flush contact_info">
+        <div *ngFor="let contact of filterContacts | orderBy ">
+
+          <button (click)="passValue(contact)" type="button" class="list-group-item list-group-item-action contact_list"
+                  data-toggle="modal"
+                  data-target="#contactInfo">
+            {{contact.name }}
+          </button>
+          <!--modal button-->
+
+
+          <!-- Modal window-->
+          <div class="modal fade" id="contactInfo" tabindex="-1" role="dialog" aria-labelledby="contactInfoLabel"
+               aria-hidden="true">
+            <div class="modal-dialog ">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="contactInfoLabel">Contact Info</h5>
+                  <button (click)="clearValue(contact)" type="button" class="close" data-dismiss="modal"
+                          aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <!--modal header-->
+
+                <!-- modal body with form-->
+                <form #form="ngForm" novalidate>
+                  <div class="modal-body">
+                    <div class="container">
+
+                      <div class="row">
+                        <!--contact image-->
+                        <div class="col-sm-4">
+                          <div class="form-group">
+                            <img [src]="contactImage" name="image" style="height: 100px;width: 100px"
+                                 class="rounded-circle" >
+
+                            <input type="file" accept="image/*" [hidden]="isDisabled"
+                                   (change)="handleFileSelect($event)" class="small">
+                            <input type="text" name="image" hidden="true" [ngModel]="imageSrc">
+
+                          </div>
+                        </div>
+
+                        <!--contact id-->
+                        <div class="form-group ">
+                          <input type="text" name="id" hidden="hidden" class="form-control" [ngModel]="contactId">
+                        </div>
+
+                        <div class="col-sm-8">
+
+                          <!--contact name-->
+                          <div class="form-group ">
+                            <label>Name</label>
+                            <input type="text" required minlength="4" required maxlength="15" name="name" required
+                                   #name="ngModel" class="form-control"
+                                   [disabled]="isDisabled" [(ngModel)]="contactName">
+                            <div *ngIf="name.invalid && (name.dirty || name.touched)" class="error small">
+
+                              <div *ngIf="name?.errors.required ">
+                                Name is required.
+                              </div>
+
+                              <div *ngIf="name?.errors.minlength ">
+                                Name must be at least 4 characters long.
+                              </div>
+
+                            </div>
+                            <!--name.invalid-->
+                          </div>
+                          <!--form group-->
+
+                          <!--contact number-->
+                          <div class="form-group">
+                            <label>Number</label>
+                            <input type="text" required minlength="4" reuired maxlength="14" name="number"
+                                   pattern="[0-9]{1,14}" required #number="ngModel"
+                                   [disabled]="isDisabled" class="form-control" [ngModel]="contactNumber">
+                            <div *ngIf="number.invalid && (number.dirty || number.touched)" class=" small">
+
+                              <div *ngIf="number?.errors?.required" class="error small">
+                                contact number is required
+                              </div>
+
+                              <div *ngIf="number?.errors?.pattern" class="error small">
+                                characters are not allowed in number
+                              </div>
+
+                              <div *ngIf="number?.errors.minlength" class="error small">
+                                Number must be at least 4 digit long.
+                              </div>
+
+                            </div>
+                          </div>
+                          <!--form group-->
+
+                        </div>
+                        <!--col-md-8-->
+
+                      </div>
+                      <!--row-->
+
+                      <!--row2-->
+                      <div class="row">
+
+                        <!--contact Email-->
+                        <div class="col-md-6">
+                          <div class="form-group">
+
+                            <label>Email</label>
+                            <input type="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"
+                                   #email="ngModel" [disabled]="isDisabled"
+                                   class="form-control" [ngModel]="contactEmail">
+
+                            <div *ngIf="email?.errors?.pattern   && (email.dirty || email.touched)" class="error small">
+                              Email address is not valid
+                            </div>
+                          </div>
+                        </div>
+
+                        <!--contact group-->
+                        <div class="col-md-6">
+                          <div class="form-group">
+
+                            <label>Group</label>
+                            <input type="text" name="group" class="form-control" value={{contactGroup}} disabled
+                                   [hidden]="!isDisabled">
+                            <div>
+                              <select class="custom-select" [disabled]="isDisabled" [hidden]="isDisabled" name="group"
+                                      [ngModel]=contact?.group>
+
+                                <option *ngFor=" let item of groups" [value]="item.group">
+                                  {{item.group}}
+                                </option>
+
+                              </select>
+                            </div>
+
+                          </div>
+                        </div>
+
+                      </div>
+                      <!--row2-->
+
+
+                    </div>
+                    <!--container-->
+                  </div>
+                  <!--modal body--->
+
+                  <!--modal footer-->
+                  <div class="modal-footer">
+
+                    <button (click)="clearValue()" type="submit" class="btn btn-secondary" data-dismiss="modal">
+                      Close
+                    </button>
+
+                    <button type="button" (click)="onEdit()" [hidden]="!isDisabled" class="btn btn-primary">
+                      Edit
+                    </button>
+
+                    <button type="submit" (click)="handleSubmit(form.value)" [disabled]="form.invalid"
+                            [hidden]="isDisabled || !saveContact"
+                            class="btn btn-secondary">
+                      save change
+                    </button>
+
+                    <button type="submit" (click)="removeContact(contact)" [hidden]="!isDisabled"
+                            class="btn btn-danger left">
+                      Delete
+                    </button>
+
+                    <button type="submit" (click)=handleSave(form.value) [disabled]="form.invalid "
+                            [hidden]="saveContact" class="btn btn-secondary">
+                      save contact
+                    </button>
+
+                  </div>
+                  <!-- modal footer-->
+                </form>
+                <!--ng form-->
+              </div>
+              <!--modal content-->
+            </div>
+            <!--modal dialog-->
+          </div>
+          <!--modal fade-->
+        </div>
+        <!--ngFor-->
+      </ul>
+      <!--list group-->
+    </div>
+    <!--col-md-10-->
+    <!--end of contact list component-->
+
+  </div>
+  <!--row-->
+
+</div>
+<!--List_container-->
