@@ -128,7 +128,7 @@
 
                             <input type="file" accept="image/*" [hidden]="isDisabled"
                                    (change)="handleFileSelect($event)" class="small">
-                            <input type="text" name="image" hidden="true" [ngModel]="imageSrc">
+                            <input type="text" name="image" #image="ngModel" hidden="true" [ngModel]="imageSrc">
 
                           </div>
                         </div>
